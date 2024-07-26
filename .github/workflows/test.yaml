@@ -6,6 +6,10 @@ on:
       - '**/dashboard.json'
   workflow_dispatch:
 
+env:
+  DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+  DATADOG_APP_KEY: ${{ secrets.DATADOG_APP_KEY }}
+  
 jobs:
   create-resources:
     runs-on: ubuntu-latest
@@ -52,6 +56,4 @@ jobs:
                 "
                             fi
                           done
-                        env:
-                          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-                          DATADOG_APP_KEY: ${{ secrets.DATADOG_APP_KEY }}
+                        
