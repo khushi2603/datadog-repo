@@ -29,7 +29,7 @@ jobs:
           for client_dir in $(find . -maxdepth 1 -type d -name 'client*'); do
             if [ -f "$client_dir/dashboard.json" ]; then
               echo "Processing $client_dir/dashboard.json"
-              python - <<EOF
+              python -c "
 import os
 import json
 from datadog import initialize, api
@@ -44,11 +44,12 @@ options = {
 initialize(**options)
 
 # Create Dashboard
-with open('${client_dir}/dashboard.json', 'r') as file:
+client_dir = '$client_dir'
+with open(f'{client_dir}/dashboard.json', 'r') as file:
     dashboard_data = json.load(file)
 response = api.Dashboard.create(**dashboard_data)
-print(f"Dashboard created for {client_dir}:", response)
-EOF
+print(f'Dashboard created for {client_dir}:', response)
+"
             fi
           done
         env:
