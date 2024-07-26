@@ -20,7 +20,7 @@ def create_dashboard(file_path):
     print(f"Dashboard created for {file_path}:", response)
 
 # Find and process all dashboard.json files
-dashboard_files = glob.glob('client*/dashboard.json')
+dashboard_files = glob.glob('Client*/dashboard.json')
 for file_path in dashboard_files:
     print(f'Processing {file_path}')
     create_dashboard(file_path)
