@@ -27,38 +27,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install datadog
 
-      - name: Process client directories
-        run: |
-          for client_dir in $(find . -maxdepth 1 -type d -name 'client*'); do
-            if [ -f "$client_dir/dashboard.json" ]; then
-              echo "Processing $client_dir/dashboard.json"
-              python -c "
-              import os
-              import json
-              from datadog import initialize, api
-
-              # Initialize Datadog
-              options = {
-                  'api_key': os.getenv('DATADOG_API_KEY'),
-                  'app_key': os.getenv('DATADOG_APP_KEY'),
-                  'api_host': 'https://api.us5.datadoghq.com'
-              }
-
-              initialize(**options)
-
-              # Create Dashboard
-              client_dir = '$client_dir'
-              try:
-                  with open(f'{client_dir}/dashboard.json', 'r') as file:
-                      dashboard_data = json.load(file)
-                  print('Dashboard data:', json.dumps(dashboard_data, indent=2))
-                  response = api.Dashboard.create(**dashboard_data)
-                  if 'errors' in response:
-                      print(f'Error creating dashboard for {client_dir}:', response['errors'])
-                  else:
-                      print(f'Dashboard created for {client_dir}:', response)
-              except Exception as e:
-                  print(f'Exception occurred while processing {client_dir}:', str(e))
-                            "
-                          fi
-                        done
+      - name: Run create_dashboard script
+        run: python ../../dashboard.py
