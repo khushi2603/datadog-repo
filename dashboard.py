@@ -12,7 +12,7 @@ options = {
 initialize(**options)
  
 # Load your dashboard JSON
-with open('dashboard.json', 'r') as file:
+with open('Client1/dashboard.json', 'r') as file:
     dashboard_data = json.load(file)
  
 # Create the dashboard
