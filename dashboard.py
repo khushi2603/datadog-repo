@@ -26,6 +26,6 @@ def create_dashboard(file_path):
         print(f'Exception occurred while processing {file_path}:', str(e))
 
 # Find and process all dashboard.json files
-for file_path in glob.glob('client*/dashboard.json'):
+for file_path in glob.glob('client2/dashboard.json'):
     print(f'Processing {file_path}')
     create_dashboard(file_path)
