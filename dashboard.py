@@ -4,7 +4,6 @@ import glob
 import hashlib
 from datadog import initialize, api
 
-# Initialize Datadog
 options = {
     'api_key': os.getenv('DATADOG_API_KEY'),
     'app_key': os.getenv('DATADOG_APP_KEY'),
@@ -21,9 +20,7 @@ def compute_checksum(file_path):
             sha256.update(chunk)
     return sha256.hexdigest()
 
-# Function to create or update dashboard
 def create_or_update_dashboard(file_path, dashboard_data):
-    # Get list of existing dashboards
     existing_dashboards = api.Dashboard.get_all()
     
     # Check if a dashboard with the same title exists
@@ -44,7 +41,6 @@ def create_or_update_dashboard(file_path, dashboard_data):
         else:
             print(f"No changes detected for {file_path}, skipping update.")
     else:
-        # Create new dashboard
         response = api.Dashboard.create(**dashboard_data)
         print(f"Dashboard created for {file_path}: {response}")
 
@@ -57,7 +53,7 @@ else:
     previous_checksums = {}
 
 # Find and process all dashboard.json files
-dashboard_files = glob.glob('Client*/dashboard.json')
+dashboard_files = glob.glob('**/dashboard.json')
 current_checksums = {}
 
 for file_path in dashboard_files:
