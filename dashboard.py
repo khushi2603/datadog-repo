@@ -21,12 +21,32 @@ def compute_checksum(file_path):
             sha256.update(chunk)
     return sha256.hexdigest()
 
-# Function to create dashboard
-def create_dashboard(file_path):
-    with open(file_path, 'r') as file:
-        dashboard_data = json.load(file)
-    response = api.Dashboard.create(**dashboard_data)
-    print(f"Dashboard created for {file_path}:", response)
+# Function to create or update dashboard
+def create_or_update_dashboard(file_path, dashboard_data):
+    # Get list of existing dashboards
+    existing_dashboards = api.Dashboard.get_all()
+    
+    # Check if a dashboard with the same title exists
+    existing_dashboard = None
+    for dashboard in existing_dashboards['dashboards']:
+        if dashboard['title'] == dashboard_data['title']:
+            existing_dashboard = dashboard
+            break
+    
+    if existing_dashboard:
+        # Update existing dashboard if content has changed
+        dashboard_id = existing_dashboard['id']
+        existing_dashboard_data = api.Dashboard.get(dashboard_id)
+        
+        if existing_dashboard_data['widgets'] != dashboard_data['widgets']:
+            response = api.Dashboard.update(dashboard_id, **dashboard_data)
+            print(f"Dashboard updated for {file_path}: {response}")
+        else:
+            print(f"No changes detected for {file_path}, skipping update.")
+    else:
+        # Create new dashboard
+        response = api.Dashboard.create(**dashboard_data)
+        print(f"Dashboard created for {file_path}: {response}")
 
 # Load previous checksums from file
 checksums_file = 'checksums.json'
@@ -46,9 +66,11 @@ for file_path in dashboard_files:
 
     if previous_checksums.get(file_path) != checksum:
         print(f'Processing {file_path}')
-        create_dashboard(file_path)
+        with open(file_path, 'r') as file:
+            dashboard_data = json.load(file)
+        create_or_update_dashboard(file_path, dashboard_data)
     else:
-        print(f'Skipping {file_path}, no changes detected')
+        print(f'Skipping {file_path}, no changes detected.')
 
 # Save current checksums to file
 with open(checksums_file, 'w') as file:
